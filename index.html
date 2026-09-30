@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PRLLL — Coffee, Unclassified.</title>
+<meta name="description" content="PRLLL Parallel Coffee. Five frequencies. Drop 01.">
+<meta name="theme-color" content="#070504">
+<link rel="icon" type="image/png" href="assets/brand/favicon.png">
+<link rel="preload" href="assets/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* ───────────── FONTS (self-hosted) ───────────── */
+@font-face{font-family:"Fraunces";src:url(assets/fonts/fraunces.woff2) format("woff2");font-style:normal;font-weight:100 900;font-display:swap}
+@font-face{font-family:"Fraunces";src:url(assets/fonts/fraunces-italic.woff2) format("woff2");font-style:italic;font-weight:100 900;font-display:swap}
+@font-face{font-family:"Geist";src:url(assets/fonts/geist.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url(assets/fonts/geist-mono.woff2) format("woff2");font-weight:400;font-display:swap}
+
+/* ───────────── TOKENS ───────────── */
+@property --accent{syntax:"<color>";inherits:true;initial-value:#ff3fd2}
+:root{
+  --bg:#070504;--ink:#f5ede2;--mut:rgba(245,237,226,.76);--faint:rgba(245,237,226,.62);
+  --accent:#ff3fd2;--cyan:#27e4ff;
+  --serif:"Fraunces","Times New Roman",serif;
+  --sans:"Geist",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --pad:clamp(18px,3.4vw,56px);
+  transition:--accent .9s ease;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;font-synthesis:none}
+/* Lenis */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:clip}
+.lenis.lenis-smooth iframe{pointer-events:none}
+/* single-weight display faces: never let the browser fake a bold */
+h1,h2,h3,h4{font-weight:300}
+/* Fraunces: light weight, optical size follows font-size (hairlines at display sizes), no quirky axes */
+:root{font-optical-sizing:auto;--soft:"SOFT" 0,"WONK" 0}
+.serif,.h2,.hero-title,.fpanel h3,.info h4,.pin .detail b,.sheet a,.mq span,.fcard .nm,.card .vert,.phil .words,.foot-word,.spec .t{font-weight:300;font-variation-settings:"SOFT" 0,"WONK" 0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--accent);color:#000}
+
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.serif{font-family:var(--serif);font-weight:300;letter-spacing:-.025em}
+.serif em{font-style:italic}
+
+/* ───────────── ATMOSPHERE (the background) ───────────── */
+.atmos{position:fixed;inset:0;z-index:-2;overflow:hidden;background:
+  radial-gradient(130% 90% at 50% 120%,#1d0f0b 0%,#0c0706 46%,var(--bg) 100%)}
+/* video backdrop: sits at the very bottom of the atmosphere; a dark shade keeps every word readable,
+   then the coloured mesh glows (.orb) screen on top of it, so the footage takes the same colour treatment the site had before */
+.vbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.8s ease;filter:saturate(.95) contrast(1.05);pointer-events:none}
+.vbg.ready{opacity:1}
+.vshade{position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(100% 80% at 50% 40%,rgba(7,5,4,.5) 0%,rgba(7,5,4,.66) 65%,rgba(7,5,4,.82) 100%),
+  linear-gradient(to bottom,rgba(7,5,4,.5) 0%,rgba(7,5,4,.12) 30%,rgba(7,5,4,.12) 70%,rgba(7,5,4,.55) 100%)}
+/* mesh: soft radial fields, each a different hue; the accent field follows the active frequency.
+   Motion is driven by the "living mesh" script below (continuous sine drift, breathing, pointer depth). */
+.orb{position:absolute;border-radius:50%;mix-blend-mode:screen;will-change:transform;translate:0 calc(var(--sp,0)*var(--t,0)*1vh)}
+.orb.o1{--t:-30;width:70vw;height:70vw;left:-22vw;top:-28vw;background:radial-gradient(closest-side,color-mix(in srgb,var(--accent) 62%,transparent) 0%,color-mix(in srgb,var(--accent) 26%,transparent) 42%,transparent 100%);opacity:.58}
+.orb.o2{--t:-55;width:62vw;height:62vw;right:-20vw;top:14vh;background:radial-gradient(closest-side,rgba(255,148,70,.55) 0%,rgba(255,120,50,.2) 45%,transparent 100%);opacity:.42}
+.orb.o3{--t:-20;width:58vw;height:58vw;left:18vw;bottom:-30vw;background:radial-gradient(closest-side,rgba(39,228,255,.42) 0%,rgba(39,228,255,.12) 48%,transparent 100%);opacity:.5}
+.orb.o4{--t:-70;width:48vw;height:48vw;left:46vw;top:-18vw;background:radial-gradient(closest-side,rgba(92,54,255,.5) 0%,rgba(92,54,255,.14) 50%,transparent 100%);opacity:.38}
+.orb.o5{--t:-40;width:44vw;height:44vw;left:-14vw;bottom:8vh;background:radial-gradient(closest-side,rgba(255,170,90,.32) 0%,transparent 100%);opacity:.4}
+/* edge vignette keeps the mesh from washing out the copy */
+.atmos::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 50% 40%,transparent 55%,rgba(5,3,3,.55) 100%)}
+
+/* ───────────── LIQUID GLASS ───────────── */
+.glass{
+  --r:28px;--scrim:.3;position:relative;border-radius:var(--r);isolation:isolate;
+  background:linear-gradient(145deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.045) 36%,rgba(255,255,255,.025) 62%,rgba(255,255,255,.08) 100%);
+  background-color:rgba(10,6,5,var(--scrim));
+  -webkit-backdrop-filter:blur(22px) saturate(165%) brightness(1.04);
+  backdrop-filter:blur(22px) saturate(165%) brightness(1.04);
+  box-shadow:
+    inset 0 1.5px 8px -3px rgba(255,255,255,.2),
+    inset 0 0 30px rgba(255,255,255,.03),
+    0 0 0 1px rgba(0,0,0,.22),
+    0 34px 64px -30px rgba(0,0,0,.8),
+    0 2px 8px rgba(0,0,0,.28);
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass{background-color:rgba(24,16,14,.88)}}
+/* rim — one even hairline that never drops to zero, with a soft lens-glint at the two opposite corners */
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(135deg,rgba(255,255,255,.46) 0%,rgba(255,255,255,.17) 18%,rgba(255,255,255,.085) 50%,rgba(255,255,255,.17) 82%,rgba(255,255,255,.3) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+/* specular sheen that follows the pointer */
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;opacity:0;transition:opacity .45s;
+  background:radial-gradient(240px circle at var(--mx,30%) var(--my,0%),rgba(255,255,255,.2),transparent 62%);mix-blend-mode:soft-light}
+.glass:hover::after{opacity:1}
+/* optional refraction (Chromium) — bends what sits behind the glass; heavier blur keeps text behind it unreadable-as-text */
+html.chromium .refract{
+  -webkit-backdrop-filter:url(#lg) blur(22px) saturate(170%) brightness(1.05);
+  backdrop-filter:url(#lg) blur(22px) saturate(170%) brightness(1.05)}
+.tint{background-image:linear-gradient(145deg,color-mix(in srgb,var(--accent) 30%,transparent),rgba(255,255,255,.035) 55%,color-mix(in srgb,var(--accent) 12%,transparent))}
+/* glass that carries text sits on a darker scrim so nothing behind it competes */
+.nav{--scrim:.42}
+.hero-card,.spec,.fcard,.synd-card,.card .info{--scrim:.52}
+.sheet{--scrim:.8}
+.fpanel{--scrim:.58}
+.chip,.live-dot{--scrim:.42}
+.pin .detail{--scrim:.6}
+
+/* buttons */
+.btn{--r:999px;border-radius:var(--r);display:inline-flex;align-items:center;gap:10px;height:50px;padding:0 24px;font-size:13px;font-weight:500;letter-spacing:.01em;white-space:nowrap;transition:transform .5s var(--ease),box-shadow .5s}
+.btn:hover{transform:translateY(-2px)}
+.btn svg{width:14px;height:14px;transition:transform .5s var(--ease)}
+.btn:hover svg{transform:translate(3px,-3px)}
+.btn.solid{background:var(--ink);color:#120b08;box-shadow:0 10px 40px -8px color-mix(in srgb,var(--accent) 70%,transparent),inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 6px rgba(0,0,0,.12);backdrop-filter:none;-webkit-backdrop-filter:none}
+.btn.solid::before,.btn.solid::after{display:none}
+.btn.sm{height:40px;padding:0 18px;font-size:12px}
+
+/* ───────────── NAV ───────────── */
+.nav{position:fixed;z-index:100;top:16px;left:50%;transform:translateX(-50%);width:min(calc(100% - 28px),1180px);height:60px;--r:999px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 20px;transition:top .5s var(--ease),width .6s var(--ease)}
+.nav.scrolled{width:min(calc(100% - 28px),920px)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:.08em}
+.brand img{height:26px;width:auto;filter:drop-shadow(0 0 10px rgba(39,228,255,.35))}
+.links{display:flex;gap:30px;font-size:13px;color:var(--mut)}
+.links a{transition:color .3s;position:relative}
+.links a:hover,.links a.on{color:var(--ink)}
+.menu{display:none;width:40px;height:40px;border-radius:50%;place-items:center}
+.menu span{display:block;width:16px;height:1.5px;background:var(--ink);margin:2.5px 0;transition:.4s var(--ease)}
+.sheet{position:fixed;z-index:99;inset:84px 14px auto 14px;--r:30px;padding:22px;display:grid;gap:4px;opacity:0;pointer-events:none;transform:translateY(-10px) scale(.98);transition:.5s var(--ease)}
+.sheet a{font-family:var(--serif);font-size:38px;letter-spacing:-.02em;padding:6px 4px}
+body.menu-open .sheet{opacity:1;pointer-events:auto;transform:none}
+
+/* ───────────── HERO ───────────── */
+.hero{position:relative;min-height:max(100svh,760px);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 var(--pad) clamp(22px,4vh,44px)}
+.hero-meta{position:absolute;top:104px;left:var(--pad);right:var(--pad);display:flex;justify-content:space-between;z-index:4}
+.hero-title{position:absolute;left:var(--pad);right:var(--pad);top:clamp(120px,19vh,210px);z-index:1;font-family:var(--serif);font-weight:300;font-size:clamp(72px,14.2vw,268px);line-height:.84;letter-spacing:-.03em;pointer-events:none}
+.hero-title span{display:block}
+.hero-title .l2{font-style:italic;margin-left:clamp(0px,7vw,150px);background:linear-gradient(100deg,var(--ink) 55%,color-mix(in srgb,var(--accent) 35%,var(--ink)) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.par{position:absolute;will-change:transform;transform:translate3d(calc(var(--px,0)*var(--d,10)*1px),calc(var(--py,0)*var(--d,10)*1px),0);transition:transform .9s var(--ease)}
+.float{animation:float 9s ease-in-out infinite alternate}
+@keyframes float{from{transform:translateY(-10px) rotate(-1.2deg)}to{transform:translateY(12px) rotate(1.4deg)}}
+.splash{z-index:2;right:-9%;top:34vh;width:min(80vw,1400px);--d:-14;pointer-events:none}
+.splash img{width:100%;filter:drop-shadow(0 50px 60px rgba(0,0,0,.55))}
+.bean{pointer-events:none}
+.bean img{width:100%;filter:drop-shadow(0 30px 30px rgba(0,0,0,.6))}
+.bean.b1{z-index:3;width:clamp(74px,8vw,150px);right:9%;top:24vh;--d:-30}
+.bean.b1 img{animation:spin 18s linear infinite alternate}
+.bean.b2{z-index:3;width:clamp(110px,13vw,240px);left:43%;bottom:3vh;--d:34}
+.bean.b2 img{filter:blur(5px) drop-shadow(0 30px 30px rgba(0,0,0,.6))}
+.bean.b3{z-index:0;width:clamp(58px,6vw,110px);left:7%;top:47vh;--d:16;opacity:.75}
+.bean.b3 img{filter:blur(2px);animation:spin 24s linear infinite alternate-reverse}
+@keyframes spin{from{transform:rotate(-14deg) translateY(-8px)}to{transform:rotate(18deg) translateY(10px)}}
+.hero-row{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.hero-card{--r:30px;width:min(430px,100%);padding:26px 26px 24px}
+.hero-card p{font-size:15.5px;line-height:1.55;color:var(--mut);margin-bottom:22px}
+.hero-card .row{display:flex;gap:10px;flex-wrap:wrap}
+.spec{--r:30px;width:330px;padding:22px 24px 22px;position:relative;margin-top:110px}
+.spec{background-color:rgba(12,7,5,.38)}
+.spec .jar{position:absolute;right:14px;bottom:24px;width:118px;height:auto;filter:drop-shadow(0 34px 30px rgba(0,0,0,.6));transform:rotate(6deg);z-index:3;pointer-events:none}
+.spec .t{font-family:var(--serif);font-size:34px;line-height:.98;margin:12px 0 18px;width:52%;letter-spacing:-.02em}
+.spec .m{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:3}
+.chip{--r:999px;display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 13px;font-size:11.5px;color:var(--mut);white-space:nowrap}
+.chip i{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+.scrollcue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:5;display:none}
+
+/* ───────────── MARQUEE ───────────── */
+.marquee{position:relative;padding:34px 0;overflow:hidden;border-block:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.012);-webkit-mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.mq{display:flex;width:max-content;animation:mq 46s linear infinite}
+.mq span{display:flex;align-items:center;gap:30px;padding-right:30px;font-family:var(--serif);font-size:clamp(34px,4.6vw,68px);letter-spacing:-.02em;white-space:nowrap}
+.mq span em{color:color-mix(in srgb,var(--ink) 50%,transparent)}
+.mq i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--accent));box-shadow:0 0 18px var(--c,var(--accent))}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ───────────── SECTIONS ───────────── */
+.sec{position:relative;padding:clamp(90px,14vw,190px) var(--pad)}
+.wrap{max-width:1440px;margin:auto}
+.h2{font-family:var(--serif);font-weight:300;font-size:clamp(52px,8.4vw,136px);line-height:.9;letter-spacing:-.032em}
+.h2 em{font-style:italic;color:color-mix(in srgb,var(--accent) 60%,var(--ink))}
+.lede{font-size:clamp(16px,1.25vw,19px);line-height:1.6;color:var(--mut);max-width:470px}
+.rv{opacity:0;transform:translateY(34px);filter:blur(8px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease),filter 1.1s var(--ease)}
+.rv.in{opacity:1;transform:none;filter:none}
+.rv.d1{transition-delay:.12s}.rv.d2{transition-delay:.24s}.rv.d3{transition-delay:.36s}
+
+/* manifest */
+.manifest{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,6vw,110px);align-items:center}
+.manifest .eyebrow{margin-bottom:26px}
+.manifest .lede{margin-top:38px}
+.stage-glass{position:relative;height:clamp(520px,54vw,780px);display:grid;place-items:center}
+.halo{position:absolute;width:78%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,150,70,.55),rgba(255,120,40,.12) 45%,transparent 68%);filter:blur(24px);animation:breathe 7s ease-in-out infinite alternate}
+@keyframes breathe{to{transform:scale(1.12);opacity:.75}}
+.ring{position:absolute;width:86%;aspect-ratio:1;--r:50%;border-radius:50%}
+.iced{position:relative;z-index:2;height:82%;filter:drop-shadow(0 50px 50px rgba(0,0,0,.6))}
+.iced img{height:100%;width:auto;animation:float 10s ease-in-out infinite alternate}
+.tag{position:absolute;z-index:4;animation:float 8s ease-in-out infinite alternate}
+.tag .chip{height:38px;padding:0 16px 0 14px;font-size:13px;color:var(--ink);cursor:default;transition:transform .5s var(--ease)}
+.tag:hover .chip{transform:scale(1.08)}
+.tag.t1{left:-2%;top:16%}.tag.t2{right:-2%;top:30%;animation-delay:-2s}.tag.t3{left:4%;bottom:20%;animation-delay:-4s}.tag.t4{right:2%;bottom:12%;animation-delay:-1s}
+
+/* frequencies (pinned) */
+.freq-intro{padding-bottom:clamp(40px,6vw,90px);display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap}
+.freq{position:relative;height:520vh}
+.freq-pin{position:sticky;top:0;height:100svh;overflow:hidden}
+.worlds{position:absolute;inset:0}
+.worlds img{position:absolute;top:0;left:0;width:116%;height:100%;object-fit:cover;opacity:0;transform:scale(1.12);transition:opacity 1.2s ease,transform 7s var(--ease)}
+.worlds img.on{opacity:1;transform:scale(1)}
+.worlds::after{content:"";position:absolute;inset:0;background:
+  linear-gradient(to top,rgba(7,5,4,.92) 0%,rgba(7,5,4,.35) 42%,rgba(7,5,4,.25) 100%),
+  radial-gradient(90% 70% at 85% 10%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 60%)}
+.tabs{position:absolute;z-index:5;top:96px;left:50%;transform:translateX(-50%);--r:999px;display:flex;padding:6px;gap:4px;max-width:calc(100% - 28px);overflow:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{position:relative;height:42px;padding:0 16px;border-radius:999px;font-size:13px;color:var(--mut);white-space:nowrap;display:flex;align-items:center;gap:9px;transition:color .4s,background .5s}
+.tabs button b{font-family:var(--mono);font-weight:400;font-size:10.5px;opacity:.6}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{color:#120b08;background:var(--ink);box-shadow:0 6px 26px -6px color-mix(in srgb,var(--accent) 80%,transparent)}
+.fpanel{position:absolute;z-index:5;left:var(--pad);bottom:clamp(24px,6vh,64px);width:min(640px,calc(100% - var(--pad)*2));--r:36px;padding:clamp(24px,3vw,40px)}
+.fpanel .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.fpanel h3{font-family:var(--serif);font-weight:300;font-size:clamp(40px,5.2vw,82px);line-height:.92;letter-spacing:-.04em;margin-bottom:18px;overflow-wrap:anywhere}
+.fpanel h3 em{font-style:italic;display:block;color:color-mix(in srgb,var(--accent) 65%,var(--ink))}
+.fpanel p{color:var(--mut);font-size:16px;max-width:420px;margin-bottom:26px}
+.blends{display:flex;flex-wrap:wrap;gap:8px}
+.blends .chip{height:36px;font-size:12.5px;color:var(--ink);transition:transform .5s var(--ease)}
+.blends .chip:hover{transform:translateY(-3px)}
+.blends .chip.live{background-image:linear-gradient(145deg,color-mix(in srgb,var(--accent) 45%,transparent),rgba(255,255,255,.06))}
+.fpanel .swap{transition:opacity .5s,transform .7s var(--ease)}
+.fpanel.out .swap{opacity:0;transform:translateY(14px)}
+.fcard{position:absolute;z-index:5;right:var(--pad);bottom:clamp(24px,6vh,64px);width:290px;--r:30px;padding:12px 12px 18px}
+.fcard .img{aspect-ratio:1;border-radius:20px;overflow:hidden;margin-bottom:16px;position:relative}
+.fcard .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .9s,transform 1.2s var(--ease);transform:scale(1.26);transform-origin:0 0}
+.fcard .img img.on{opacity:1;transform:scale(1.15)}
+.fcard .nm{font-family:var(--serif);font-size:27px;line-height:1;padding:0 8px;letter-spacing:-.02em}
+.fcard .nt{padding:8px 8px 0;font-size:13px;color:var(--mut)}
+.fprog{position:absolute;z-index:5;right:var(--pad);top:108px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.fprog{text-shadow:0 1px 10px rgba(0,0,0,.7)}
+.fprog .bar{width:2px;height:120px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden;position:relative}
+.fprog .bar i{position:absolute;left:0;top:0;width:100%;background:var(--accent);box-shadow:0 0 12px var(--accent);height:0%}
+
+/* drop 01 accordion */
+.drop-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap;margin-bottom:clamp(40px,5vw,72px)}
+.acc{display:flex;gap:12px;height:clamp(560px,62vw,760px)}
+.card{--r:34px;--c:var(--accent);position:relative;flex:1;min-width:0;overflow:hidden;cursor:pointer;transition:flex .9s var(--ease),transform .6s var(--ease);background:#100a08;isolation:isolate}
+.card.on{flex:3.4}
+.card>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;transform:scale(1.1);transition:transform 1.4s var(--ease),filter .8s;filter:brightness(.62) saturate(.9)}
+.card.on>img{transform:scale(1);filter:none}
+.card::after{z-index:3}
+.card .idx{position:absolute;top:22px;left:24px;z-index:4;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:rgba(255,255,255,.9);text-shadow:0 1px 10px rgba(0,0,0,.7)}
+.card .vert{position:absolute;left:50%;top:50%;z-index:4;transform:translate(-50%,-50%) rotate(-90deg);font-family:var(--serif);font-size:clamp(28px,3.2vw,46px);white-space:nowrap;letter-spacing:-.02em;text-shadow:0 2px 22px rgba(0,0,0,.65);transition:opacity .4s}
+.card.on .vert{opacity:0}
+.card .info{position:absolute;left:12px;right:12px;bottom:12px;z-index:4;--r:24px;padding:20px 22px;opacity:0;transform:translateY(24px);transition:opacity .6s .15s,transform .9s var(--ease) .1s;pointer-events:none}
+.card.on .info{opacity:1;transform:none;pointer-events:auto}
+.info .cat{margin-bottom:10px;display:flex;align-items:center;gap:9px}
+.info .cat i{width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 14px var(--c)}
+.info h4{font-family:var(--serif);font-weight:300;font-size:clamp(34px,3.6vw,54px);line-height:.95;letter-spacing:-.03em;margin-bottom:8px}
+.info .notes{font-size:14px;color:var(--mut);margin-bottom:16px}
+.info .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.info .sizes{display:flex;gap:8px}
+.live-dot{position:absolute;top:20px;right:22px;z-index:4;--r:999px;height:28px;padding:0 12px;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.live-dot i{width:6px;height:6px;border-radius:50%;background:#7dff8f;box-shadow:0 0 10px #7dff8f;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+
+/* lineup (interactive jars) */
+.lineup{position:relative;--r:40px;overflow:hidden;padding:0;aspect-ratio:1376/768;background:#0a0708}
+.lineup>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1}
+.lineup .vig{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,5,4,.7),transparent 40%);z-index:0;pointer-events:none}
+.pin{position:absolute;z-index:3;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.pin .chip{height:36px;padding:0 15px 0 13px;font-size:12.5px;color:var(--ink);transition:transform .5s var(--ease)}
+.pin .chip i{background:var(--c);box-shadow:0 0 12px var(--c)}
+.pin{--c:var(--accent)}
+.pin .stem{width:1px;height:clamp(18px,4vw,64px);background:linear-gradient(rgba(255,255,255,.7),transparent)}
+.pin:hover .chip{transform:translateY(-4px) scale(1.06)}
+.pin .detail{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translate(-50%,8px);width:200px;--r:20px;padding:14px 16px;opacity:0;pointer-events:none;transition:.5s var(--ease);text-align:left}
+.pin .detail b{display:block;font-family:var(--serif);font-weight:300;font-size:24px;line-height:1;margin-bottom:6px}
+.pin .detail span{font-size:12.5px;color:var(--mut);line-height:1.4;display:block}
+.pin:hover .detail,.pin:focus-within .detail{opacity:1;transform:translate(-50%,0)}
+.lineup-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:16px;flex-wrap:wrap}
+
+/* tasting box (merged under the lineup) */
+.box{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(24px,4vw,64px);align-items:center;margin-top:clamp(64px,9vw,130px)}
+.spec-list{display:grid;gap:8px}
+.srow{--r:18px;display:flex;justify-content:space-between;align-items:center;padding:15px 20px;font-size:14px;transition:transform .5s var(--ease)}
+.srow:hover{transform:translateX(6px)}
+.srow span:first-child{display:flex;align-items:center;gap:12px}
+.srow i{width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 14px var(--c)}
+.srow span:last-child{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em}
+
+/* philosophy */
+.phil{text-align:center;position:relative;overflow:hidden}
+.phil .words{position:relative;z-index:1;font-family:var(--serif);font-size:clamp(34px,5.4vw,86px);line-height:1.04;letter-spacing:-.035em;max-width:1200px;margin:34px auto 0}
+.phil .w{opacity:.16;transition:opacity .35s,filter .35s;display:inline-block;margin-right:.22em}
+.phil .w.lit{opacity:1}
+.phil .w.hl.lit{color:color-mix(in srgb,var(--accent) 65%,var(--ink));font-style:italic}
+.phil .bean{position:absolute}
+.phil .pb1{width:clamp(70px,9vw,150px);left:6%;top:14%;z-index:0}
+.phil .pb2{width:clamp(90px,12vw,210px);right:5%;bottom:10%;z-index:0}
+.phil .pb2 img{filter:blur(3px) drop-shadow(0 30px 30px rgba(0,0,0,.6))}
+
+/* syndicate */
+.synd{position:relative;overflow:hidden;padding:clamp(70px,10vw,140px) var(--pad)}
+.synd-bg{position:absolute;inset:0;z-index:-1}
+.synd-bg img{width:100%;height:100%;object-fit:cover;filter:brightness(.55) saturate(1.1)}
+.synd-bg{-webkit-mask:linear-gradient(to bottom,transparent,#000 22%,#000 72%,transparent);mask:linear-gradient(to bottom,transparent,#000 22%,#000 72%,transparent)}
+.synd-card{--r:44px;max-width:960px;margin:auto;padding:clamp(30px,5vw,68px);text-align:center}
+.synd-card .h2{font-size:clamp(48px,7vw,108px);margin:20px 0 20px}
+.synd-card .lede{margin:0 auto 34px}
+.form{--r:999px;display:flex;max-width:520px;margin:0 auto;padding:6px}
+.form input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:14.5px;padding:0 20px}
+.form input::placeholder{color:var(--faint)}
+
+/* footer */
+.foot{position:relative;padding:60px var(--pad) 30px;overflow:hidden}
+.foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;align-items:flex-start}
+.foot-links{display:flex;gap:8px;flex-wrap:wrap}
+.foot-links a{--r:999px;height:40px;padding:0 18px;display:inline-flex;align-items:center;font-size:13px;color:var(--mut);transition:color .3s,transform .5s var(--ease)}
+.foot-links a:hover{color:var(--ink);transform:translateY(-2px)}
+.foot-word{font-family:var(--serif);font-size:clamp(120px,34vw,560px);line-height:.72;letter-spacing:-.06em;text-align:center;margin-top:50px;background:linear-gradient(to bottom,rgba(245,237,226,.9),rgba(245,237,226,.02) 88%);-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none}
+.foot-bot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:-1.5vw;position:relative}
+
+/* ───────────── RESPONSIVE ───────────── */
+@media (max-width:980px){
+  .links,.nav>.btn{display:none}
+  .menu{display:grid}
+  .hero-row{flex-direction:column;align-items:stretch}
+  .spec{display:none}
+  .hero-title{top:132px}
+  .splash{width:150vw;right:-46%;top:30vh}
+  .bean.b2{left:auto;right:6%;bottom:auto;top:62vh}
+  .manifest,.box{grid-template-columns:1fr}
+  .fcard,.fprog{display:none}
+  .tabs{top:84px}
+  .acc{flex-direction:column;height:auto}
+  .card{flex:none;height:92px}
+  .card.on{height:520px}
+  .card .vert{left:24px;top:50%;transform:translateY(-50%);font-size:30px}
+  .card .idx{display:none}
+  .pin .detail{display:none}
+}
+@media (max-width:620px){
+  .hero-meta span:last-child{display:none}
+  .hero-title{font-size:19vw;top:128px}
+  .hero-title .l2{margin-left:3vw}
+  .splash{top:36vh}
+  .tabs button{padding:0 13px;font-size:12px}
+  .tabs button span{display:none}
+  .tabs button.on span{display:inline}
+  .fpanel{--r:30px}
+  .tag.t3,.tag.t4{display:none}
+  .lineup{border-radius:28px;--r:28px}
+  .pin .chip{height:28px;font-size:10.5px;padding:0 10px 0 9px}
+  .pin .chip span{display:none}
+  .form{flex-direction:column;border-radius:30px;--r:30px;padding:10px;gap:8px}
+  .form input{height:48px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none;filter:none}}
+</style>
+</head>
+<body>
+
+<!-- liquid refraction filter (Chromium uses it on .refract; other browsers fall back to blur) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="lg" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.008 0.014" numOctaves="2" seed="7" result="n"/>
+    <feGaussianBlur in="n" stdDeviation="3" result="nb"/>
+    <feDisplacementMap in="SourceGraphic" in2="nb" scale="44" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</defs></svg>
+
+<div class="atmos" aria-hidden="true"><video class="vbg" muted loop playsinline autoplay preload="auto" disablepictureinpicture tabindex="-1" poster="assets/video/nebula-landscape.webp"></video><div class="vshade"></div><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div><div class="orb o5"></div></div>
+
+<!-- NAV -->
+<nav class="nav glass refract" id="nav">
+  <a class="brand" href="#top"><img src="assets/brand/prlll-mark.png" alt="" width="17" height="26">PRLLL</a>
+  <div class="links"><a href="#frequencies">Frequencies</a><a href="#drop01">Drop 01</a><a href="#spectrum">Spectrum</a><a href="#story">Story</a><a href="#syndicate">Syndicate</a></div>
+  <a class="btn solid sm" href="#drop01">Reserve Drop 01 <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 11 3M4.5 3H11v6.5"/></svg></a>
+  <button class="menu glass" id="menu" aria-label="Menu"><div><span></span><span></span></div></button>
+</nav>
+<div class="sheet glass refract" id="sheet">
+  <a href="#frequencies">Frequencies</a><a href="#drop01">Drop 01</a><a href="#spectrum">Spectrum</a><a href="#story">Story</a><a href="#syndicate">Syndicate</a>
+</div>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-meta mono"><span>Parallel Coffee — Drop 01</span><span>Five frequencies / 2026</span></div>
+  <h1 class="hero-title"><span class="l1">Coffee,</span><span class="l2">Unclassified.</span></h1>
+
+  <div class="par bean b3" data-d="1"><img src="assets/fx/bean-b.webp" alt=""></div>
+  <div class="par splash"><div class="float"><img src="assets/fx/splash.webp" alt="Coffee beans and a caramel splash in mid-air"></div></div>
+  <div class="par bean b1"><img src="assets/fx/bean-a.webp" alt=""></div>
+  <div class="par bean b2"><img src="assets/fx/bean-b.webp" alt=""></div>
+
+  <div class="hero-row">
+    <div class="hero-card glass refract tint rv">
+      <p>Five frequencies. One parallel universe. Coffee built around flavour, mood and sensory energy — not the rules of ordinary coffee.</p>
+      <div class="row">
+        <a class="btn solid" href="#drop01">Explore Drop 01 <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 11 3M4.5 3H11v6.5"/></svg></a>
+        <a class="btn glass" href="#frequencies">Choose a frequency</a>
+      </div>
+    </div>
+    <div class="spec glass refract rv d2">
+      <img class="jar" src="assets/product/prlll-jar.webp" alt="PRLLL Parallel Coffee jar, Berry Chaos" width="895" height="1100">
+      <div class="mono">Drop 01</div>
+      <div class="t">Five live blends</div>
+      <div class="m"><span class="chip glass"><i></i>20g vial</span><span class="chip glass"><i></i>150g jar</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true"><div class="mq" id="mq"></div></div>
+
+<!-- MANIFEST -->
+<section class="sec" id="story"><div class="wrap manifest">
+  <div>
+    <div class="mono eyebrow rv">01 — The departure</div>
+    <h2 class="h2 rv d1">We don’t make <em>ordinary</em> coffee.</h2>
+    <p class="lede rv d2">Parallel moves past origins and roast profiles into wavelengths, moods and sensory frequencies. A collection designed to feel less like a routine and more like a shift in state.</p>
+  </div>
+  <div class="stage-glass rv d1" id="stageGlass">
+    <div class="halo"></div>
+    <div class="ring glass"></div>
+    <div class="iced par" style="position:relative;--d:10"><img src="assets/fx/iced-glass.webp" alt="Iced coffee poured over crystal"></div>
+    <div class="tag t1"><span class="chip glass"><i></i>Blueberry</span></div>
+    <div class="tag t2"><span class="chip glass"><i style="background:#ffb36b;box-shadow:0 0 12px #ffb36b"></i>Salted caramel</span></div>
+    <div class="tag t3"><span class="chip glass"><i style="background:#8dff9a;box-shadow:0 0 12px #8dff9a"></i>Fresh mint</span></div>
+    <div class="tag t4"><span class="chip glass"><i style="background:#ffd24d;box-shadow:0 0 12px #ffd24d"></i>Mango</span></div>
+  </div>
+</div></section>
+
+<!-- FREQUENCIES -->
+<section id="frequencies">
+  <div class="sec freq-intro" style="padding-bottom:40px"><div class="wrap" style="width:100%;display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap">
+    <div><div class="mono rv" style="margin-bottom:26px">02 — The system</div><h2 class="h2 rv d1">Choose a<br><em>frequency.</em></h2></div>
+    <p class="lede rv d2">Five distinct sensory worlds. Scroll to move through the collection — the environment changes, and so does the light of the whole site.</p>
+  </div></div>
+  <div class="freq" id="freq"><div class="freq-pin">
+    <div class="worlds" id="worlds"></div>
+    <div class="tabs glass refract" id="tabs"></div>
+    <div class="fprog mono"><span id="fnum">01 / 05</span><div class="bar"><i id="fbar"></i></div></div>
+    <div class="fpanel glass refract tint" id="fpanel">
+      <div class="top"><span class="mono" id="fkick">Frequency 01</span><span class="chip glass"><i></i>Drop 01</span></div>
+      <div class="swap">
+        <h3 id="ftitle"></h3>
+        <p id="fdesc"></p>
+        <div class="blends" id="fblends"></div>
+      </div>
+    </div>
+    <div class="fcard glass refract">
+      <div class="img" id="fimg"></div>
+      <div class="mono" style="padding:0 8px 8px">Live in Drop 01</div>
+      <div class="nm" id="fnm"></div>
+      <div class="nt" id="fnt"></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- DROP 01 -->
+<section class="sec" id="drop01"><div class="wrap">
+  <div class="drop-head">
+    <div><div class="mono rv" style="margin-bottom:26px">03 — Drop 01</div><h2 class="h2 rv d1">Five <em>live</em><br>blends.</h2></div>
+    <p class="lede rv d2">One blend from each frequency. The first sequence is limited by design — hover to open a world.</p>
+  </div>
+  <div class="acc rv" id="acc"></div>
+</div></section>
+
+<!-- LINEUP + TASTING BOX (merged) -->
+<section class="sec" id="spectrum" style="padding-top:0"><div class="wrap">
+  <div class="mono rv" style="margin-bottom:26px">04 — The lineup</div>
+  <div class="lineup glass rv d1" id="lineup">
+    <img src="assets/worlds/lineup.webp" alt="The five PRLLL jars on stone plinths at dusk" loading="lazy">
+    <div class="vig"></div>
+  </div>
+  <div class="lineup-foot"><span class="mono">Hover a jar tag to read the blend</span></div>
+  <div class="box">
+    <div>
+      <div class="mono rv" style="margin-bottom:26px">The Parallel Spectrum</div>
+      <h2 class="h2 rv d1" style="font-size:clamp(48px,6.2vw,100px)">Five frequencies.<br><em>One box.</em></h2>
+      <p class="lede rv d2" style="margin-top:26px">The complete Drop 01 in five curated 20g vials. A first pass through the entire parallel.</p>
+      <a class="btn solid rv d3" style="margin-top:34px" href="mailto:hello@prlll.in?subject=Parallel%20Spectrum">Secure your box <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 11 3M4.5 3H11v6.5"/></svg></a>
+    </div>
+    <div class="spec-list rv d2" id="slist"></div>
+  </div>
+</div></section>
+
+<!-- PHILOSOPHY -->
+<section class="sec phil">
+  <div class="par bean pb1" data-d="1"><img src="assets/fx/bean-a.webp" alt=""></div>
+  <div class="par bean pb2"><img src="assets/fx/bean-b.webp" alt=""></div>
+  <div class="mono rv">05 — The philosophy</div>
+  <p class="words" id="words">Coffee should be more than a morning ritual. <span class="hl">Expressive,</span> <span class="hl">experimental</span> and deeply sensory — blends that feel familiar for half a second, then move somewhere else entirely.</p>
+</section>
+
+<!-- SYNDICATE -->
+<section class="synd" id="syndicate">
+  <div class="synd-bg"><img src="assets/hero/dark-portal.webp" alt="" loading="lazy"></div>
+  <div class="synd-card glass refract tint rv">
+    <div class="mono">06 — The inner circle</div>
+    <h2 class="h2">Parallel <em>Syndicate.</em></h2>
+    <p class="lede">Early access to future sequences, experimental micro-batches and limited allocations.</p>
+    <form class="form glass" id="form"><input type="email" required placeholder="Your email" aria-label="Email"><button class="btn solid" type="submit">Join the waitlist</button></form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="foot-top">
+    <div><div class="mono" style="margin-bottom:14px">Parallel Coffee</div><div class="serif" style="font-size:34px;line-height:1.05;max-width:320px">Coffee, <em>unclassified.</em></div></div>
+    <div class="foot-links">
+      <a class="glass" href="#frequencies">Frequencies</a><a class="glass" href="#drop01">Drop 01</a><a class="glass" href="#spectrum">Spectrum</a><a class="glass" href="#syndicate">Syndicate</a>
+      <a class="glass" href="https://www.instagram.com/prlllcoffee/" target="_blank" rel="noopener">Instagram</a><a class="glass" href="mailto:hello@prlll.in">hello@prlll.in</a>
+    </div>
+  </div>
+  <div class="foot-word" aria-hidden="true">PRLLL</div>
+  <div class="foot-bot mono"><span>© Parallel Coffee</span><span>Drop 01 — Live</span></div>
+</footer>
+
+<script src="assets/vendor/lenis.min.js"></script>
+<script>
+const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
+const ua=navigator.userAgent;
+if(/Chrome|Chromium|Edg\//.test(ua)&&!/OPR|Firefox/.test(ua))document.documentElement.classList.add('chromium');
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+
+/* ── living mesh: each glow drifts on two layered sine waves (no keyframe stops, never visibly loops),
+      its shape wobbles and its brightness breathes at its own pace, and it leans gently toward the pointer at its own depth ── */
+(()=>{
+  if(reduce)return;
+  const els=$$('.atmos .orb');if(!els.length)return;
+  const base=els.map(e=>parseFloat(getComputedStyle(e).opacity)||.5);
+  //      amp x/y (vw/vh)  drift speeds (rad/s)   phase   wobble  breathe  depth(vw)
+  const P=[{ax:19,ay:13,f:.105,g:.163,p:0.0,w:.13,b:.16,d:7},
+           {ax:17,ay:15,f:.087,g:.141,p:1.9,w:.11,b:.14,d:4},
+           {ax:20,ay:12,f:.094,g:.152,p:3.7,w:.14,b:.18,d:9},
+           {ax:15,ay:16,f:.121,g:.187,p:5.1,w:.10,b:.15,d:5},
+           {ax:18,ay:14,f:.099,g:.171,p:2.6,w:.12,b:.17,d:11}];
+  let mx=0,my=0,tx=0,ty=0,last=performance.now(),t=0;
+  addEventListener('pointermove',e=>{tx=e.clientX/innerWidth-.5;ty=e.clientY/innerHeight-.5},{passive:true});
+  function frame(now){
+    const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
+    const W=innerWidth/100,H=innerHeight/100,k=1-Math.pow(.012,dt); // frame-rate independent easing
+    mx+=(tx-mx)*k*.6;my+=(ty-my)*k*.6;
+    els.forEach((el,i)=>{const c=P[i];
+      const x=(Math.sin(t*c.f+c.p)*.68+Math.sin(t*c.g+c.p*1.7)*.32)*c.ax*W+mx*c.d*W;
+      const y=(Math.cos(t*c.f*.83+c.p*1.3)*.68+Math.sin(t*c.g*.77+c.p)*.32)*c.ay*H+my*c.d*W;
+      const sx=1+Math.sin(t*c.f*1.4+c.p)*c.w, sy=1+Math.cos(t*c.g*1.2+c.p*.8)*c.w;
+      el.style.transform=`translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) scale(${sx.toFixed(3)},${sy.toFixed(3)})`;
+      el.style.opacity=(base[i]*(1+Math.sin(t*c.f*1.9+c.p*2)*c.b)).toFixed(3);
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ── video backdrop: portrait cut on phones, landscape cut on desktop; WebM where supported, MP4 (Safari) otherwise.
+      Reduced-motion and Data-Saver visitors get the still poster instead of the moving footage. ── */
+(()=>{
+  const v=$('.vbg');if(!v)return;
+  const saveData=navigator.connection&&navigator.connection.saveData;
+  const ext=v.canPlayType('video/webm; codecs="vp9"')?'webm':'mp4';
+  let cur=null;
+  const load=()=>{
+    const k=innerWidth/innerHeight<1?'portrait':'landscape';if(k===cur)return;cur=k;
+    v.poster='assets/video/nebula-'+k+'.webp';
+    if(reduce||saveData){v.classList.add('ready');return}
+    v.classList.remove('ready');v.muted=true;v.src='assets/video/nebula-'+k+'.'+ext;v.load();
+    v.addEventListener('canplay',()=>{v.classList.add('ready');v.play().catch(()=>{})},{once:true});
+    v.play().catch(()=>{});
+  };
+  load();
+  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(load,300)});
+})();
+
+/* ── data ── */
+const F=[
+ {k:'berry',name:'Berry Chaos',a:'#ff3fd2',desc:'High-fruit, high-acidity, dripping with neon energy.',blends:['Plug in the Matrix','Main Character Energy','Pop Culture Kryptonite','Internet Breakout'],live:'Plug in the Matrix',notes:'Blueberry + Bubble Gum + Mint'},
+ {k:'dessert',name:'Dessert Delusion',a:'#ff9a4d',desc:'Rich, sweet and indulgent — pushed well past the expected.',blends:['Impulsive Coffee Choice','Do Not Touch My Vibe','Unhinged Compliment','Rent Free'],live:'Impulsive Coffee Choice',notes:'Salted Caramel + Butter Cookies + Chocolate'},
+ {k:'botanical',name:'Botanical Psychosis',a:'#b6ff5a',desc:'Floral, green and aromatic, with an unfamiliar edge.',blends:['Cancelling My Subscription','Spiritual Gaslighting','Reasonable Anxiety','Existential Crisis'],live:'Reasonable Anxiety',notes:'Chamomile + Orange + Peach'},
+ {k:'tropics',name:'Neon Tropics',a:'#2fe0ff',desc:'Tropical fruit in a brighter, stranger register.',blends:['Overstimulated','Complimentary Chaos','Aggressively Offline','Toxic Positivity'],live:'Complimentary Chaos',notes:'Peach + Fresh Mango + Mint'},
+ {k:'spiced',name:'Spiced Glitch',a:'#ff6b3d',desc:'Warm spice, depth and a sharp modern edge.',blends:['Brain Fog Archive','Nope, Not Today','Unmuted Audio','Social Battery: 1%'],live:'Social Battery: 1%',notes:'Aniseed + Dark Chocolate + Orange'}
+];
+const nm=n=>n.split(' ');
+
+/* ── marquee ── */
+(()=>{const one=F.map(f=>`<span style="--c:${f.a}"><i></i>${nm(f.name)[0]} <em>${nm(f.name).slice(1).join(' ')}</em></span>`).join('');$('#mq').innerHTML=one+one+one+one})();
+
+/* ── frequency stage ── */
+const worlds=$('#worlds'),tabs=$('#tabs'),fimg=$('#fimg');
+worlds.innerHTML=F.map((f,i)=>`<img src="assets/worlds/${f.k}.webp" alt="${f.name}" ${i?'loading="lazy"':''}>`).join('');
+fimg.innerHTML=F.map(f=>`<img src="assets/frequencies/${f.k}.webp" alt="${f.name} — ${f.live}" loading="lazy">`).join('');
+tabs.innerHTML=F.map((f,i)=>`<button data-i="${i}"><b>0${i+1}</b><span>${f.live}</span></button>`).join('');
+let cur=-1;
+function setFreq(i){
+  if(i===cur)return;const first=cur<0;cur=i;const f=F[i];
+  document.documentElement.style.setProperty('--accent',f.a);
+  $$('#worlds img').forEach((e,j)=>e.classList.toggle('on',j===i));
+  $$('#fimg img').forEach((e,j)=>e.classList.toggle('on',j===i));
+  $$('#tabs button').forEach((e,j)=>e.classList.toggle('on',j===i));
+  const p=$('#fpanel'),swap=()=>{
+    $('#fkick').textContent='Frequency 0'+(i+1);
+    const w=nm(f.live);$('#ftitle').innerHTML=w.length>1?w[0]+'<em>'+w.slice(1).join(' ')+'</em>':w[0];
+    $('#fdesc').textContent=f.desc;
+    $('#fblends').innerHTML=f.blends.map(b=>`<span class="chip glass ${b===f.live?'live':''}">${b===f.live?'<i></i>':''}${b}</span>`).join('');
+    $('#fnm').textContent=f.name;$('#fnt').textContent=f.notes;$('#fnum').textContent='0'+(i+1)+' / 05';
+    p.classList.remove('out')};
+  if(first){swap()}else{p.classList.add('out');setTimeout(swap,260)}
+}
+/* ── Lenis smooth scroll (native scroll position, so the pinned frequency section keeps working) ── */
+let lenis=null;
+if(!reduce&&window.Lenis){
+  lenis=new Lenis({autoRaf:true,lerp:.085,wheelMultiplier:.95,smoothWheel:true,anchors:false});
+}
+function goTo(t,o={}){ if(lenis)lenis.scrollTo(t,{duration:1.4,easing:x=>1-Math.pow(1-x,4),...o}); else scrollTo({top:typeof t==='number'?t:(t.getBoundingClientRect().top+scrollY),behavior:'smooth'}) }
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute('href');if(id.length<2&&id!=='#')return;
+  const t=id==='#'?0:document.querySelector(id);if(t===null)return;e.preventDefault();goTo(id==='#top'?0:t)});
+const freq=$('#freq');
+function freqScroll(){
+  const r=freq.getBoundingClientRect(),h=r.height-innerHeight;
+  const t=Math.min(1,Math.max(0,-r.top/h));
+  $('#fbar').style.height=(t*100)+'%';
+  setFreq(Math.min(4,Math.floor(t*5*.999)));
+}
+tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  const i=+b.dataset.i,h=freq.offsetHeight-innerHeight;
+  goTo(freq.offsetTop+h*((i+.5)/5),{duration:1.6})});
+setFreq(0);
+
+/* ── drop 01 accordion ── */
+const acc=$('#acc');
+acc.innerHTML=F.map((f,i)=>`
+<article class="card glass ${i?'':'on'}" style="--c:${f.a}" tabindex="0">
+  <img src="assets/frequencies/${f.k}.webp" alt="${f.live}" loading="lazy">
+  <span class="idx">0${i+1}</span>
+  <span class="live-dot glass"><i></i>Live</span>
+  <span class="vert">${f.name}</span>
+  <div class="info glass refract">
+    <div class="cat mono"><i></i>${f.name}</div>
+    <h4>${f.live}</h4>
+    <div class="notes">${f.notes}</div>
+    <div class="row"><div class="sizes"><span class="chip glass">20g vial</span><span class="chip glass">150g jar</span></div>
+    <a class="btn solid sm" href="mailto:hello@prlll.in?subject=${encodeURIComponent('Reserve — '+f.live)}">Reserve <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 11 3M4.5 3H11v6.5"/></svg></a></div>
+  </div>
+</article>`).join('');
+const cards=$$('.card',acc);
+const openCard=c=>{cards.forEach(x=>x.classList.toggle('on',x===c));document.documentElement.style.setProperty('--accent',c.style.getPropertyValue('--c'))};
+cards.forEach(c=>{c.addEventListener('mouseenter',()=>matchMedia('(hover:hover)').matches&&openCard(c));c.addEventListener('click',()=>openCard(c));c.addEventListener('focus',()=>openCard(c))});
+
+/* ── lineup pins (order as they stand in the image) ── */
+const L=[{x:13.4,f:0},{x:32.8,f:3},{x:50.4,f:4},{x:68.1,f:2},{x:87.7,f:1}];
+$('#lineup').insertAdjacentHTML('beforeend',L.map(p=>{const f=F[p.f];return `<div class="pin" style="left:${p.x}%;top:30%;--c:${f.a}" tabindex="0">
+<div class="detail glass"><b>${f.live}</b><span>${f.notes}</span></div>
+<span class="chip glass"><i></i><span>${f.name}</span></span><span class="stem"></span></div>`}).join(''));
+
+/* ── spectrum list ── */
+$('#slist').innerHTML=F.map((f,i)=>`<div class="srow glass" style="--c:${f.a}"><span><i></i>0${i+1} — ${f.name}</span><span>20G</span></div>`).join('');
+
+/* ── philosophy word reveal ── */
+const words=$('#words');
+(function split(n){[...n.childNodes].forEach(c=>{
+  if(c.nodeType===3){const f=document.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(t=>{if(!t.trim()){return}const s=document.createElement('span');s.className='w';s.textContent=t;if(n.classList&&n.classList.contains('hl'))s.classList.add('hl');f.appendChild(s)});c.replaceWith(f)}
+  else split(c)})})(words);
+const ws=$$('.w',words);
+function wordScroll(){const r=words.getBoundingClientRect();const t=Math.min(1,Math.max(0,(innerHeight*.85-r.top)/(r.height+innerHeight*.35)));
+  const n=Math.round(t*ws.length*1.15);ws.forEach((w,i)=>w.classList.toggle('lit',i<n))}
+
+/* ── pointer: hero parallax + glass sheen ── */
+const hero=$('.hero');
+if(!reduce)hero.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect();
+  hero.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*2);hero.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*2)});
+hero.addEventListener('pointerleave',()=>{hero.style.setProperty('--px',0);hero.style.setProperty('--py',0)});
+const sg=$('#stageGlass');if(sg&&!reduce)sg.addEventListener('pointermove',e=>{const r=sg.getBoundingClientRect();
+  sg.style.setProperty('--px',((e.clientX-r.left)/r.width-.5)*2);sg.style.setProperty('--py',((e.clientY-r.top)/r.height-.5)*2)});
+document.addEventListener('pointermove',e=>{const g=e.target.closest&&e.target.closest('.glass');if(!g)return;
+  const r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px')},{passive:true});
+
+/* ── reveal + nav ── */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+$$('.rv').forEach(el=>io.observe(el));
+const nav=$('#nav');
+const secs=['frequencies','drop01','spectrum','story','syndicate'].map(id=>document.getElementById(id));
+function onScroll(){
+  nav.classList.toggle('scrolled',scrollY>60);
+  document.documentElement.style.setProperty('--sp',(scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight)).toFixed(4));
+  freqScroll();wordScroll();
+  const y=scrollY+innerHeight*.4;$$('.links a').forEach(a=>{const s=document.querySelector(a.getAttribute('href'));a.classList.toggle('on',s&&y>=s.offsetTop&&y<s.offsetTop+s.offsetHeight)});
+}
+addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+
+/* ── menu ── */
+const setMenu=o=>{document.body.classList.toggle('menu-open',o);if(lenis)o?lenis.stop():lenis.start()};
+$('#menu').addEventListener('click',()=>setMenu(!document.body.classList.contains('menu-open')));
+$$('#sheet a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+
+/* ── syndicate form ── */
+$('#form').addEventListener('submit',e=>{e.preventDefault();const v=e.target.querySelector('input').value;
+  location.href='mailto:hello@prlll.in?subject='+encodeURIComponent('Parallel Syndicate')+'&body='+encodeURIComponent('Add me to the waitlist: '+v)});
+</script>
+</body>
+</html>
